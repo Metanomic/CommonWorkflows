@@ -1,0 +1,12 @@
+name: lint Infrastructure
+description: "Lint the CDK infrastructure"
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest  
+    steps:
+    - run: pnpm run lint
+      working-directory: ./infrastructure
+      shell: bash

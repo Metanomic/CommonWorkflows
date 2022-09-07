@@ -1,0 +1,38 @@
+name: Test infrastructure
+description: "Test infrastructure"
+on:
+  workflow_call:
+    inputs:
+      AWS_ACCOUNT:
+        required: true
+        type: string
+      AWS-REGION:
+        required: true 
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  
+    steps:
+    - uses: actions/cache@v3
+      with:
+        path: infrastructure/cdk.out
+        # This cache is usually good "forever" unless some significant changes happen to CDK (e.g. a major version
+        # upgrade), in which case we can just bump the date here manually to trigger a cache miss
+        key: ${{github.ref}}-cdk-out-cache-20220705
+
+    - run: npx cdk bootstrap aws://${{ inputs.AWS_ACCOUNT }}/${{ inputs.AWS_REGION }}
+      working-directory: ./infrastructure
+      shell: bash
+
+    - name: cdk synth
+      uses: youyo/aws-cdk-github-actions@v2
+      with:
+        cdk_subcommand: "synth"
+        actions_comment: true
+        working_dir: "infrastructure"
+
+    - name: Run Jest tests
+      run: pnpm run test
+      working-directory: ./infrastructure
+      shell: bash
