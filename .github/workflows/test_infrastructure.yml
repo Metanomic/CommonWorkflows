@@ -1,5 +1,4 @@
 name: Test infrastructure
-description: "Test infrastructure"
 on:
   workflow_call:
     inputs:
@@ -14,6 +13,19 @@ jobs:
   test:
     runs-on: ubuntu-latest  
     steps:
+    - uses: actions/checkout@v3
+
+    - name: Cache NPM dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-npm-cache-
+
+    - name: Install NPM dependencies
+      run: npm install
+
     - uses: actions/cache@v3
       with:
         path: infrastructure/cdk.out
@@ -21,7 +33,7 @@ jobs:
         # upgrade), in which case we can just bump the date here manually to trigger a cache miss
         key: ${{github.ref}}-cdk-out-cache-20220705
 
-    - run: npx cdk bootstrap aws://${{ inputs.AWS_ACCOUNT }}/${{ inputs.AWS_REGION }}
+    - run: npx cdk bootstrap aws://${{ inputs.AWS_ACCOUNT }}/${{ inputs.AWS-REGION }}
       working-directory: ./infrastructure
       shell: bash
 
@@ -33,6 +45,6 @@ jobs:
         working_dir: "infrastructure"
 
     - name: Run Jest tests
-      run: pnpm run test
+      run: npm run test
       working-directory: ./infrastructure
       shell: bash

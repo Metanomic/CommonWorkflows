@@ -1,12 +1,31 @@
 name: lint Infrastructure
-description: "Lint the CDK infrastructure"
+
 on:
   workflow_call:
-
+  
 jobs:
   lint:
-    runs-on: ubuntu-latest  
+
+    name: lint
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./infrastructure
+        shell: bash
+
+
     steps:
-    - run: pnpm run lint
-      working-directory: ./infrastructure
-      shell: bash
+    - uses: actions/checkout@v3
+
+    - name: Cache NPM dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-npm-cache-
+
+    - name: Install NPM dependencies
+      run: npm install
+    - run: npm run lint
