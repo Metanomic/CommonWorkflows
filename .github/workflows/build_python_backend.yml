@@ -2,6 +2,10 @@ name: build python backend
 
 on:
   workflow_call:
+    inputs:
+      path:
+        required: false
+        type: string
 
 jobs:
   ld:
