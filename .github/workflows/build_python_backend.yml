@@ -5,6 +5,7 @@ on:
     inputs:
       path:
         required: false
+        type: string
 
 jobs:
   build:
