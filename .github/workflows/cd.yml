@@ -1,0 +1,35 @@
+name: Deploy infrastructure
+
+on:
+  workflow_call:
+    inputs:
+      AWS_ACCOUNT:
+        required: true
+        type: string
+      AWS_REGION:
+        required: true
+        type: string
+jobs:
+  deploy:
+    name: deploy infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: infrastructure/cdk.out
+          # This cache is usually good "forever" unless some significant changes happen to CDK (e.g. a major version
+          # upgrade), in which case we can just bump the date here manually to trigger a cache miss
+          key: ${{github.ref}}-cdk-out-cache-20220705
+
+      - run: npx cdk bootstrap aws://${{ inputs.AWS_ACCOUNT }}/${{ inputs.AWS_REGION }}
+        shell: bash
+
+      - name: cdk deploy
+        uses: youyo/aws-cdk-github-actions@v2.1.1
+        with:
+          cdk_subcommand: "deploy"
+          cdk_stack: "--all"
+          cdk_args: "--require-approval never"
+          actions_comment: true
+          working_dir: "infrastructure"
