@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: build-backend
+    name: ci-backend-python
     runs-on: ubuntu-latest
     strategy:
       matrix:
