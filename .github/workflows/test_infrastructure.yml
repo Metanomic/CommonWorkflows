@@ -33,6 +33,10 @@ jobs:
         # upgrade), in which case we can just bump the date here manually to trigger a cache miss
         key: ${{github.ref}}-cdk-out-cache-20220705
 
+    - run: |
+        npm install ts-node --save-dev
+        npm install typescript -g 
+        npm install typescript --save-dev
     - run: npx cdk bootstrap aws://${{ inputs.AWS_ACCOUNT }}/${{ inputs.AWS-REGION }}
       working-directory: ./infrastructure
       shell: bash
