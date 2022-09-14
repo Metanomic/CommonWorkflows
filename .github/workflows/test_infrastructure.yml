@@ -1,13 +1,11 @@
 name: Test infrastructure
 on:
   workflow_call:
-    inputs:
+    secrets:
       AWS_ACCOUNT:
         required: true
-        type: string
       AWS-REGION:
         required: true 
-        type: string
 
 jobs:
   test:
@@ -37,7 +35,7 @@ jobs:
         npm install ts-node --save-dev
         npm install typescript -g 
         npm install typescript --save-dev
-    - run: npx cdk bootstrap aws://${{ inputs.AWS_ACCOUNT }}/${{ inputs.AWS-REGION }}
+    - run: npx cdk bootstrap aws://${{ secrets.AWS_ACCOUNT }}/${{ secrets.AWS-REGION }}
       working-directory: ./infrastructure
       shell: bash
 
